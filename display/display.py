@@ -2,8 +2,11 @@ from rplidar import RPLidar
 import pygame
 import math
 import time
+import yaml
+from sys import argv
 
 surface = pygame.display.set_mode((1000, 1000))
+config = yaml.load(open(argv[1]), Loader=yaml.FullLoader)
 
 def draw(points):
     surface.fill((0, 0, 0))
@@ -13,7 +16,7 @@ def draw(points):
 
 def run():
 
-    lidar = RPLidar('/dev/ttyUSB0')
+    lidar = RPLidar(config['lidar']['port'])
     pygame.init()
 
     points = [ (0, 0) for i in range(361) ]
@@ -24,8 +27,8 @@ def run():
         time.sleep(5)
         print('Recording data')
         for new, quality, theta, r in lidar.iter_measurments(max_buf_meas = 800):
-            x = (math.cos(math.radians(theta / math.pi) * math.pi) * r) / 10
-            y = (math.sin(math.radians(theta / math.pi) * math.pi) * r) / 10
+            x = (math.cos(math.radians(theta / math.pi) * math.pi) * r) / int(config['scale'])
+            y = (math.sin(math.radians(theta / math.pi) * math.pi) * r) / int(config['scale'])
             points[int(theta * 1)] = (x, y)
             k += 1
             if k > 100:

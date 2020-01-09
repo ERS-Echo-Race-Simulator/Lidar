@@ -1,0 +1,3 @@
+lidar:
+  port: /dev/ttyUSB0
+scale: 10
